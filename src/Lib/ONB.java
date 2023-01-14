@@ -134,13 +134,13 @@ public class ONB {
     public static ArrayList<Integer> multiply(ArrayList<Integer> elem1, ArrayList<Integer> elem2){
         int[] res = new int[DIMENSION];
         for(int i = 0; i < DIMENSION; i++){
-            elem1 = ShiftLeft(elem1,i);
-            elem2 = ShiftLeft(elem2,i);
             int [][] a = multiplyByMatrix(
                     Objects.requireNonNull(multiplyByMatrix(ArrayToMatrix(elem1), MATRIX)),
                     transpose(ArrayToMatrix(elem2)));
             assert a != null;
             res[i] = a[0][0];
+            elem1 = ShiftLeft(elem1);
+            elem2 = ShiftLeft(elem2);
 
 //            elem1 = ShiftLeft(elem1);
 //            elem2 = ShiftLeft(elem2);
@@ -157,12 +157,10 @@ public class ONB {
         return matrix;
     }
 
-    private static ArrayList<Integer> ShiftLeft(ArrayList<Integer> arr, int i){
+    private static ArrayList<Integer> ShiftLeft(ArrayList<Integer> arr){
         StringBuilder StringBuilderArr = new StringBuilder(UnitsArrToStrBin(arr));
-//        String firstElement = StringBuilderArr.substring(0,1);
-//        StringBuilderArr.deleteCharAt(0);
-        String firstElement = StringBuilderArr.substring(0,i);
-        StringBuilderArr = new StringBuilder(StringBuilderArr.substring(i, StringBuilderArr.length()));
+        String firstElement = StringBuilderArr.substring(0,1);
+        StringBuilderArr.deleteCharAt(0);
         StringBuilderArr.append(firstElement);
         return StrBinVecToUnitsArr(StringBuilderArr.toString());
     }
@@ -191,12 +189,17 @@ public class ONB {
 //        else return ShiftRight(exponentiate(elem, power/2));
 //    }
 
-    public static ArrayList<Integer> onbONE(){ //// ?????
+    public static ArrayList<Integer> onbONE(){
         ArrayList<Integer> res = new ArrayList<>(DIMENSION);
         for (int i = 0; i < DIMENSION; i++){
             res.add(i);
         }
         return res;
+    }
+
+    public static ArrayList<Integer> onbZERO(){
+
+        return new ArrayList<>(DIMENSION);
     }
 
     public static ArrayList<Integer> exponentiate(ArrayList<Integer> elem, int power){ ////?????
@@ -209,5 +212,9 @@ public class ONB {
             power >>= 1;
         }
         return res;
+    }
+
+    public static int Trace(ArrayList<Integer> elem){
+        return elem.size()%2; // 0011 - > [2,3]
     }
 }
