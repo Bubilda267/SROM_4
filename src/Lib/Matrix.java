@@ -13,7 +13,8 @@ public class Matrix {
             for (int j = 0; j < mRColLength; j++) {     // columns from m2
                 for (int k = 0; k < m1ColLength; k++) { // columns from m1
                     mResult[i][j] += (m1[i][k] * m2[k][j]);
-                    mResult[i][j] %= 2;
+                    mResult[i][j] %= 2; //if > 1 mb == 0
+//                    if(mResult[i][j] > 1) mResult[i][j] = 0;
                 }
             }
         }

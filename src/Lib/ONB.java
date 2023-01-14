@@ -5,7 +5,7 @@ import java.util.*;
 import static java.lang.Math.pow;
 import static Lib.Matrix.*;
 public class ONB {
-    private static final int DIMENSION = 3;
+    private static final int DIMENSION = 239;
     private static int[][] MATRIX;
 
     public static boolean ExistingONB(){
@@ -44,12 +44,12 @@ public class ONB {
                 double condition1 = pow(2, i) + pow(2, j);
                 double condition2 = pow(2, i) - pow(2, j);
                 double condition3 = -pow(2, i) + pow(2, j);
-                double condition4 =  pow(2, i) - pow(2, j) % p + DIMENSION;
+                double condition4 =  (-pow(2, i) - pow(2, j)) % p + p;
                 if(condition2 < 0){
-                    condition2 = condition2 % p + DIMENSION;
+                    condition2 = condition2 % p + p;
                 }
                 if(condition3 < 0){
-                    condition3 = condition3 % p + DIMENSION;
+                    condition3 = condition3 % p + p;
                 }
 
                 if(condition1 %p==1){
@@ -73,39 +73,39 @@ public class ONB {
         }
     }
 
-    public static int[] UnitsArrToArrBinVec(ArrayList<Integer> elem){ // [1,2] -> [0,1,1,0]
+    public static int[] UnitsArrToArrBinVec(ArrayList<Integer> elem){ // [1,2,3] -> [0,1,1,1]
         int[] finishedElem = new int[DIMENSION];
         for (int i = 0; i < DIMENSION; i++) {
             if(elem.contains(i)){
-                finishedElem[DIMENSION - i - 1] = 1;
+                finishedElem[i] = 1;
             }
         }
         return finishedElem;
     }
 
-    public static ArrayList<Integer> ArrBinVecToUnitsArr(int[] elem){ // [0,0,1,1] -> [1,0]
+    public static ArrayList<Integer> ArrBinVecToUnitsArr(int[] elem){ // [0,0,1,1] -> [2,3]
         ArrayList<Integer> res = new ArrayList<>(DIMENSION);
         for (int i = 0; i < DIMENSION; i++) {
             if(elem[i] == 1){
-                res.add(DIMENSION-1-i);
+                res.add(i);
             }
         }
         return res;
     }
 
-    public static ArrayList<Integer> StrBinVecToUnitsArr(String elem){ // 0011 -> [1,0]
+    public static ArrayList<Integer> StrBinVecToUnitsArr(String elem){ // 0011 -> [2,3]
         ArrayList<Integer> res = new ArrayList<>();
         for (int i = 0; i < DIMENSION; i++){
             if(elem.charAt(i) == '1'){
-                res.add(DIMENSION-1-i);
+                res.add(i);
             }
         }
         return res;
     }
 
-    public static String UnitsArrToStrBin(ArrayList<Integer> elem){ //[1,0] -> 0011
+    public static String UnitsArrToStrBin(ArrayList<Integer> elem){ //[1,0] -> 1100
         StringBuilder res = new StringBuilder(DIMENSION);
-        for (int i = DIMENSION - 1; i >= 0; i--){
+        for (int i = 0; i < DIMENSION; i++){
             if(elem.contains(i)){
                 res.append("1");
             }
@@ -134,15 +134,20 @@ public class ONB {
     public static ArrayList<Integer> multiply(ArrayList<Integer> elem1, ArrayList<Integer> elem2){
         int[] res = new int[DIMENSION];
         for(int i = 0; i < DIMENSION; i++){
+            elem1 = ShiftLeft(elem1,i);
+            elem2 = ShiftLeft(elem2,i);
             int [][] a = multiplyByMatrix(
                     Objects.requireNonNull(multiplyByMatrix(ArrayToMatrix(elem1), MATRIX)),
                     transpose(ArrayToMatrix(elem2)));
             assert a != null;
             res[i] = a[0][0];
-            elem1 = ShiftLeft(elem1);
-            elem2 = ShiftLeft(elem2);
+
+//            elem1 = ShiftLeft(elem1);
+//            elem2 = ShiftLeft(elem2);
         }
-        return ArrBinVecToUnitsArr(res);
+        ArrayList<Integer> UnitsArrRes = ArrBinVecToUnitsArr(res);
+        UnitsArrRes.sort(Collections.reverseOrder());
+        return UnitsArrRes;
     }
 
     private static int[][] ArrayToMatrix(ArrayList<Integer> arr){
@@ -152,10 +157,12 @@ public class ONB {
         return matrix;
     }
 
-    private static ArrayList<Integer> ShiftLeft(ArrayList<Integer> arr){
+    private static ArrayList<Integer> ShiftLeft(ArrayList<Integer> arr, int i){
         StringBuilder StringBuilderArr = new StringBuilder(UnitsArrToStrBin(arr));
-        String firstElement = StringBuilderArr.substring(0,1);
-        StringBuilderArr.deleteCharAt(0);
+//        String firstElement = StringBuilderArr.substring(0,1);
+//        StringBuilderArr.deleteCharAt(0);
+        String firstElement = StringBuilderArr.substring(0,i);
+        StringBuilderArr = new StringBuilder(StringBuilderArr.substring(i, StringBuilderArr.length()));
         StringBuilderArr.append(firstElement);
         return StrBinVecToUnitsArr(StringBuilderArr.toString());
     }
@@ -176,31 +183,31 @@ public class ONB {
         return res;
     }
 
-    public static ArrayList<Integer> exponentiate(ArrayList<Integer> elem, int power){
-        if(power==0) return onbONE();
+//    public static ArrayList<Integer> exponentiate(ArrayList<Integer> elem, int power){
+//        if(power==0) return onbONE();
+//
+//        else if((power & 1) == 1) return multiply(elem, ShiftRight(exponentiate(elem,(power - 1)/2)));
+//
+//        else return ShiftRight(exponentiate(elem, power/2));
+//    }
 
-        else if((power & 1) == 1) return multiply(ShiftRight(exponentiate(elem,(power - 1)/2)), elem);
-
-        else return ShiftRight(exponentiate(elem, power/2));
-    }
-
-    public static ArrayList<Integer> onbONE(){
+    public static ArrayList<Integer> onbONE(){ //// ?????
         ArrayList<Integer> res = new ArrayList<>(DIMENSION);
         for (int i = 0; i < DIMENSION; i++){
-            res.add(1);
+            res.add(i);
         }
         return res;
     }
 
-//    public static ArrayList<Integer> exponentiate(ArrayList<Integer> elem, int power){
-//        ArrayList<Integer> res = onbONE();
-//        while (power > 0){
-//            if((power & 1) == 1){
-//                res = multiply(res, elem);
-//            }
-//            elem = ShiftRight(elem);
-//            power >>= 1;
-//        }
-//        return res;
-//    }
+    public static ArrayList<Integer> exponentiate(ArrayList<Integer> elem, int power){ ////?????
+        ArrayList<Integer> res = onbONE();
+        while (power > 0){
+            if((power & 1) == 1){
+                res = multiply(res, elem);
+            }
+            elem = ShiftRight(elem);
+            power >>= 1;
+        }
+        return res;
+    }
 }
