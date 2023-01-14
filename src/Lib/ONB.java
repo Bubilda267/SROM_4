@@ -5,7 +5,7 @@ import java.util.*;
 import static java.lang.Math.pow;
 import static Lib.Matrix.*;
 public class ONB {
-    private static final int DIMENSION = 239;
+    private static final int DIMENSION = 3;
     private static int[][] MATRIX;
 
     public static boolean ExistingONB(){
@@ -160,6 +160,14 @@ public class ONB {
         return StrBinVecToUnitsArr(StringBuilderArr.toString());
     }
 
+    private static ArrayList<Integer> ShiftRight(ArrayList<Integer> arr){
+        StringBuilder StringBuilderArr = new StringBuilder(UnitsArrToStrBin(arr));
+        String lastElement = StringBuilderArr.substring(StringBuilderArr.length()-1, StringBuilderArr.length());
+        StringBuilderArr.deleteCharAt(StringBuilderArr.length()-1);
+        StringBuilderArr.insert(0, lastElement);
+        return StrBinVecToUnitsArr(StringBuilderArr.toString());
+    }
+
     private static int[][] transpose(int[][] matrix){
         int[][] res = new int[matrix[0].length][matrix.length];
         for (int i = 0; i < matrix.length; i++)
@@ -168,7 +176,31 @@ public class ONB {
         return res;
     }
 
-//    private static ArrayList<Integer> exponentiate(ArrayList<Integer> elem1, ArrayList<Integer> elem2){
-//
+    public static ArrayList<Integer> exponentiate(ArrayList<Integer> elem, int power){
+        if(power==0) return onbONE();
+
+        else if((power & 1) == 1) return multiply(ShiftRight(exponentiate(elem,(power - 1)/2)), elem);
+
+        else return ShiftRight(exponentiate(elem, power/2));
+    }
+
+    public static ArrayList<Integer> onbONE(){
+        ArrayList<Integer> res = new ArrayList<>(DIMENSION);
+        for (int i = 0; i < DIMENSION; i++){
+            res.add(1);
+        }
+        return res;
+    }
+
+//    public static ArrayList<Integer> exponentiate(ArrayList<Integer> elem, int power){
+//        ArrayList<Integer> res = onbONE();
+//        while (power > 0){
+//            if((power & 1) == 1){
+//                res = multiply(res, elem);
+//            }
+//            elem = ShiftRight(elem);
+//            power >>= 1;
+//        }
+//        return res;
 //    }
 }

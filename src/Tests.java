@@ -55,6 +55,12 @@ public class Tests {
     }
 
     @Test
+    void ExponentiationForDism3(){
+        ArrayList<Integer> a = new ArrayList<>(Arrays.asList(2,1));
+        getMatrix();
+        assertEquals(exponentiate(a,2), multiply(a,a));
+    }
+    @Test
     void UnitsArrToStrBinTestForDism3(){
         ArrayList<Integer> a = new ArrayList<>(Arrays.asList(2,1));
         String expected = "110";
